@@ -188,6 +188,6 @@ Firecrawl
 
 ---
 
-## Built for
+## Built with
 
-[Hackathon] — Built in 2 days using ElevenLabs Conversational AI and Firecrawl.
+ElevenLabs Conversational AI and Firecrawl.
