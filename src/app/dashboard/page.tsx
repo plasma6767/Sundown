@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
+import { AcknowledgeButton } from "@/components/dashboard/AcknowledgeButton";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -87,10 +88,16 @@ export default async function DashboardPage() {
                     Open patient kiosk →
                   </a>
                   <a
+                    href={`/dashboard/patients/${p.id}`}
+                    className="inline-block rounded-lg border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                  >
+                    View profile
+                  </a>
+                  <a
                     href={`/dashboard/patients/${p.id}/edit`}
                     className="inline-block rounded-lg border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
                   >
-                    Edit profile
+                    Edit
                   </a>
                 </div>
               </div>
@@ -123,11 +130,12 @@ export default async function DashboardPage() {
                     {inc.description && (
                       <p className="text-sm text-foreground mt-0.5">{inc.description}</p>
                     )}
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatDistanceToNow(new Date(inc.created_at), {
-                        addSuffix: true,
-                      })}
-                    </p>
+                    <div className="flex items-center gap-3 mt-1">
+                      <p className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(inc.created_at), { addSuffix: true })}
+                      </p>
+                      <AcknowledgeButton incidentId={inc.id} />
+                    </div>
                   </div>
                   <span
                     className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
