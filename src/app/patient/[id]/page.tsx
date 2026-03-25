@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import { PatientVoiceKiosk } from "@/components/voice/PatientVoiceKiosk";
 
 interface PatientPageProps {
   params: Promise<{ id: string }>;
@@ -17,12 +18,11 @@ export default async function PatientPage({
     return <InvalidLink />;
   }
 
-  // Use service role to bypass RLS — patient has no auth session
   const supabase = await createClient();
 
   const { data: patient } = await supabase
     .from("patients")
-    .select("id, full_name, preferred_name, access_token, onboarding_status")
+    .select("id, full_name, preferred_name, access_token")
     .eq("id", id)
     .single();
 
@@ -30,7 +30,6 @@ export default async function PatientPage({
     notFound();
   }
 
-  // Verify token matches
   if (patient.access_token !== token) {
     return <InvalidLink />;
   }
@@ -39,20 +38,18 @@ export default async function PatientPage({
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
-      <div className="w-full max-w-sm text-center space-y-6">
-        <h1 className="text-3xl font-bold text-foreground">
-          Hello, {displayName}
-        </h1>
-        <p className="text-muted-foreground">
-          Your companion is ready to talk with you.
-        </p>
-
-        {/* Voice interface will be built in Step 4 */}
-        <div className="rounded-2xl border-2 border-dashed border-border p-12">
-          <p className="text-sm text-muted-foreground">
-            Voice interface — coming in Step 4
-          </p>
+      <div className="flex w-full max-w-sm flex-col items-center gap-10 text-center">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold text-foreground">
+            Hello, {displayName}
+          </h1>
+          <p className="text-muted-foreground">Sunny is here with you.</p>
         </div>
+        <PatientVoiceKiosk
+          patientId={patient.id}
+          token={token}
+          patientName={displayName}
+        />
       </div>
     </main>
   );
@@ -61,10 +58,11 @@ export default async function PatientPage({
 function InvalidLink() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
-      <div className="text-center space-y-3">
+      <div className="space-y-3 text-center">
         <h1 className="text-2xl font-bold text-foreground">Link not valid</h1>
         <p className="text-sm text-muted-foreground">
-          This link may have expired or is incorrect. Please ask your caregiver for a new one.
+          This link may have expired or is incorrect. Please ask your caregiver
+          for a new one.
         </p>
       </div>
     </main>
