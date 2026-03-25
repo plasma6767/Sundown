@@ -53,6 +53,12 @@ export default async function DashboardPage() {
             Welcome back, {caregiver?.full_name ?? "Caregiver"}
           </h1>
           <p className="text-muted-foreground mt-1">Caregiver dashboard</p>
+          <a
+            href="/dashboard/care-intelligence"
+            className="inline-block mt-3 text-sm font-medium text-primary hover:underline"
+          >
+            View Care Intelligence →
+          </a>
         </div>
 
         <div className="space-y-4">
