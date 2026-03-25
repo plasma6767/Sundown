@@ -21,7 +21,7 @@ interface PatientProfile {
 }
 
 export function buildPatientSystemPrompt(
-  patient: Patient,
+  patient: Patient & { id: string },
   profile: PatientProfile,
   weather?: string | null
 ): string {
@@ -96,6 +96,9 @@ export function buildPatientSystemPrompt(
   lines.push(
     `\n[slow] [warm] Speak gently. Never rush. If they seem confused, reassure them softly and simplify.`
   );
+
+  // Tool context — agent uses this when calling notify_caregiver
+  lines.push(`\nSESSION CONTEXT (do not read aloud): patientId=${patient.id}`);
 
   return lines.join("\n");
 }
