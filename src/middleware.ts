@@ -37,7 +37,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/signup") ||
     pathname.startsWith("/auth");
 
-  const isPublicRoute = pathname === "/";
+  // Patient kiosk is public — token in URL is the auth mechanism
+  const isPublicRoute = pathname === "/" || pathname.startsWith("/patient");
 
   // Redirect unauthenticated users away from protected routes
   if (!user && !isAuthRoute && !isPublicRoute) {
