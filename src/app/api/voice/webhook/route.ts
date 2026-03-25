@@ -14,9 +14,21 @@ export async function POST(request: Request) {
 
   const conversationId = body.conversation_id as string | undefined;
   const transcript = Array.isArray(body.transcript) ? body.transcript : [];
-  // ElevenLabs includes metadata we injected when starting the session
+
+  // ElevenLabs echoes back dynamic_variables and metadata we set at session start
+  const dynamicVars = (body.dynamic_variables ?? {}) as Record<string, unknown>;
   const metadata = (body.metadata ?? {}) as Record<string, unknown>;
-  const patientId = (metadata.patientId ?? body.patientId) as string | undefined;
+  const patientId = (
+    dynamicVars.patient_id ?? metadata.patientId ?? body.patientId ?? body.patientID
+  ) as string | undefined;
+
+  // ElevenLabs auto-generates analysis after every call (transcript summary +
+  // success evaluation criteria results) — save it as the session summary
+  const analysis = (body.analysis ?? {}) as Record<string, unknown>;
+  const sessionSummary =
+    (analysis.transcript_summary as string | undefined) ??
+    (analysis.summary as string | undefined) ??
+    null;
 
   if (!patientId) {
     // No patientId — likely a test ping from ElevenLabs; acknowledge and move on
@@ -39,6 +51,7 @@ export async function POST(request: Request) {
         status: "ended",
         ended_at: new Date().toISOString(),
         transcript,
+        session_summary: sessionSummary,
         risk_score: riskScore,
         escalated,
       },

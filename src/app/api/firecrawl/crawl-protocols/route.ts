@@ -34,6 +34,8 @@ export async function POST() {
         communication_do: p.communication_do,
         communication_dont: p.communication_dont,
         summary_for_agent: p.summary_for_agent,
+        stage_relevance: p.stage_relevance ?? "all",
+        confidence_score: p.confidence_score ?? null,
       },
     }))
   );

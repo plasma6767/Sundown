@@ -2,7 +2,7 @@
 
 > A voice-first dementia companion that extends caregivers — not replaces them.
 
-Sundown reduces confusion during sundowning episodes by providing a personalized AI voice companion that knows each patient intimately. Caregivers onboard their loved one through a warm guided conversation, and the agent uses that knowledge to have meaningful, grounding interactions — calling the patient by their preferred name, asking about their church, their grandchildren, their garden. When distress rises, the system escalates to caregivers in real time.
+Sundown reduces confusion during sundowning episodes by providing a personalized AI voice companion that knows each patient intimately. Caregivers onboard their loved one through a warm guided voice conversation, and the agent uses that knowledge to have meaningful, grounding interactions — calling the patient by their preferred name, asking about their church, their grandchildren, their garden. When distress rises, the system escalates to caregivers in real time.
 
 ---
 
@@ -14,9 +14,9 @@ Sundowning affects up to 20% of people with dementia. Episodes of confusion, anx
 
 **Three layers working together:**
 
-1. **Personalized Voice Companion** — An ElevenLabs voice agent dynamically configured with each patient's memories, routines, trusted people, and calming strategies. Speaks slowly, warmly, and knows when to escalate.
+1. **Personalized Voice Companion** — An ElevenLabs voice agent dynamically configured with each patient's memories, routines, trusted people, and calming strategies. Speaks slowly and warmly. Knows when to escalate.
 
-2. **Guided Caregiver Onboarding** — A natural conversation-based intake that replaces cold forms. Caregivers tell stories; the system extracts structured care profiles automatically.
+2. **Guided Caregiver Onboarding** — A voice conversation with Sunny replaces cold forms. Caregivers talk naturally; the system extracts a structured care profile automatically using Claude.
 
 3. **Live Care Intelligence** — Firecrawl continuously monitors trusted dementia-care sources (NIA, Alzheimer's Association) and extracts structured protocols. The agent's guidance stays current without manual updates.
 
@@ -27,11 +27,11 @@ Sundowning affects up to 20% of people with dementia. Episodes of confusion, anx
 > *"It's not just voice plus web scraping. It's a personalized, continuously refreshed, state-aware care system."*
 
 **Demo flow:**
-1. Caregiver onboards a patient through a warm guided conversation
-2. Dashboard shows generated profile — routines, memories, talking points pulled from patient's real church and hometown via Firecrawl
-3. Patient opens the kiosk and talks — agent calls them by name, references their life
-4. Care Intelligence panel shows live Firecrawl protocol extraction
-5. Patient expresses distress — escalation fires — real-time alert appears on caregiver dashboard
+1. Caregiver signs up and speaks with Sunny to onboard their patient
+2. Claude extracts a structured profile — routines, triggers, talking points pulled from the patient's real church and hometown via Firecrawl
+3. Patient opens their personal kiosk link and starts talking — agent calls them by name, references their life
+4. Care Intelligence panel shows live Firecrawl protocol extraction from alz.org and NIA
+5. Patient expresses distress — risk score fires — real-time alert appears on caregiver dashboard instantly
 
 ---
 
@@ -39,12 +39,12 @@ Sundowning affects up to 20% of people with dementia. Episodes of confusion, anx
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 14 (App Router) + TypeScript |
+| Framework | Next.js 15 (App Router) + TypeScript |
 | Database | Supabase (PostgreSQL + Auth + Realtime) |
 | Voice AI | ElevenLabs Conversational AI |
 | LLM | Claude API (claude-sonnet-4-6) |
-| Web Intelligence | Firecrawl |
-| Styling | Tailwind CSS + shadcn/ui |
+| Web Intelligence | Firecrawl (search + map + extract) |
+| Styling | Tailwind CSS + shadcn/ui, Nunito font |
 
 ---
 
@@ -53,22 +53,23 @@ Sundowning affects up to 20% of people with dementia. Episodes of confusion, anx
 | Feature | How We Use It |
 |---|---|
 | **Dynamic Variables** | Inject patient name, memories, church, calming strategies at runtime — one agent, infinitely personalized |
-| **Patient Turn Eagerness + 25s Timeout** | Dementia patients speak slowly. This config makes the agent feel genuinely caring, not rushed |
-| **LLM-Generated Soft Timeouts** | Never leaves the patient in silence — contextual filler: *"I'm here with you..."* |
-| **Expressive Mode + Audio Tags** | `[slow]` `[warm]` `[gentle]` tags shift tone with patient state |
-| **Post-Call Webhooks + Success Evaluation** | Auto-scores every session: *"Did patient seem calm at end?"* Powers dashboard summaries |
-| **Agent-to-Agent Transfer** | Three specialized agents: Companion → Grounding → Escalation. Patient hears one coherent voice |
-| **Pronunciation Dictionary** | Patient's family names and church always pronounced correctly |
+| **25s Turn Timeout** | Dementia patients speak slowly. This makes Sunny wait instead of interrupting — feels genuinely caring |
+| **90s Silence End-Call Timeout** | Won't hang up on long pauses — critical for patients who need time to gather thoughts |
+| **Expressive Mode + Audio Tags** | `[slow]` `[warm]` `[gentle]` tags in system prompt shape vocal tone. Shifts to `[calm]` `[reassuring]` on distress |
+| **Stage-Aware Pacing** | Severe = 3–5 word sentences. Moderate = short + slow. Mild = natural warmth. Configured via prompt |
+| **Post-Call Webhook + Auto-Analysis** | ElevenLabs fires transcript + AI summary after every session. Powers dashboard session cards automatically — no extra Claude call |
+| **Dynamic Variable Echoing** | `patient_id` echoed back in webhook payload — reliable session-to-patient linking without fragile metadata |
+| **Signed Session URLs** | Server-side session creation with overridden system prompt per patient |
 
 ## Firecrawl Features Used
 
 | Feature | How We Use It |
 |---|---|
-| **Extract with Schema** | Turns messy NIA/Alzheimer's pages into typed care protocol objects (`communication_do`, `communication_dont`, `summary_for_agent`) |
-| **Familiar World Reconstruction** | Searches for patient's actual church bulletin, hometown events, favorite team — creates personalized talking points |
-| **Map Endpoint** | Discovers relevant subpages from `alz.org` programmatically before crawling |
-| **Async Crawl + Webhook** | Crawl fires → webhook updates care protocols in real time — no manual refresh |
-| **Search Endpoint** | Finds patient-specific context: `"First Baptist Church bulletin schedule"` |
+| **Map Endpoint** | Discovers relevant subpages from `alz.org` / `nia.nih.gov` programmatically before crawling — no hardcoded URLs |
+| **Extract with Schema + Confidence Score** | Turns medical pages into typed care protocol objects with `communication_do`, `communication_dont`, `summary_for_agent`, `stage_relevance`, `confidence_score`. Low-confidence extracts filtered out (<0.4) |
+| **Familiar World Reconstruction** | Searches for patient's actual church bulletin, hometown events, favorite team recap — creates personalized talking points injected into every session |
+| **Diagnosis-Stage Search** | Fetches stage-appropriate daily activity tips as an additional talking point based on patient's diagnosis |
+| **Search Endpoint** | Powers all familiar-world queries: `"First Baptist Church bulletin schedule"`, `"{hometown} local news this week"`, etc. |
 
 ---
 
@@ -104,11 +105,12 @@ Run the migrations in order in your Supabase SQL editor:
 supabase/migrations/0001_schema.sql
 supabase/migrations/0002_rls.sql
 supabase/migrations/0003_functions.sql
+supabase/migrations/0004_access_token.sql
 ```
 
-### 4. Configure ElevenLabs agents
+### 4. Configure ElevenLabs
 
-See [docs/elevenlabs-setup.md](docs/elevenlabs-setup.md) for agent configuration, webhook setup, and tool definitions.
+See [docs/elevenlabs-setup.md](docs/elevenlabs-setup.md) for agent configuration, prompt override, webhook setup, and tool definitions.
 
 ### 5. Run locally
 
@@ -118,13 +120,13 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-For webhook testing (ElevenLabs + Firecrawl), run ngrok in a separate terminal:
+For webhook testing (ElevenLabs post-call, Firecrawl), run ngrok in a separate terminal:
 
 ```bash
 ngrok http 3000
 ```
 
-Update your webhook URLs in ElevenLabs and Firecrawl to use the ngrok URL.
+Update the post-call webhook URL in your ElevenLabs agent settings to the ngrok URL.
 
 ---
 
@@ -133,20 +135,51 @@ Update your webhook URLs in ElevenLabs and Firecrawl to use the ngrok URL.
 ```
 src/
 ├── app/
-│   ├── (auth)/             # Login, signup, callback
-│   ├── onboarding/         # Guided patient intake
-│   ├── dashboard/          # Caregiver dashboard
-│   ├── patient/[id]/       # Patient-facing kiosk voice UI
-│   └── api/                # All API routes
+│   ├── (auth)/                   # Login, signup, email confirmation
+│   ├── onboarding/
+│   │   └── caregiver/            # Voice intake → profile preview
+│   ├── dashboard/
+│   │   ├── page.tsx              # Incident feed + patient cards
+│   │   ├── patients/[id]/        # Patient profile + session history
+│   │   └── care-intelligence/    # Firecrawl protocol panel
+│   ├── patient/[id]/             # Token-authenticated patient kiosk
+│   └── api/
+│       ├── auth/callback/        # Supabase OAuth callback
+│       ├── incidents/            # Create + acknowledge incidents
+│       ├── patients/[id]/        # Update patient profile
+│       ├── voice/
+│       │   ├── session/          # Build prompt + return signed ElevenLabs URL
+│       │   └── webhook/          # Post-call webhook → save transcript + risk score
+│       ├── onboarding/
+│       │   ├── chat/             # Stream Claude intake responses
+│       │   ├── generate-profile/ # Extract structured profile + create patient
+│       │   └── voice-token/      # Signed URL for caregiver voice intake
+│       └── firecrawl/
+│           └── crawl-protocols/  # Fetch + extract care protocols
 ├── components/
-│   ├── onboarding/         # Streaming chat UI, profile preview
-│   ├── voice/              # Voice interface, waveform, escalation overlay
-│   └── dashboard/          # Incident feed, patient cards, care intelligence
+│   ├── onboarding/
+│   │   ├── CaregiverVoiceIntake.tsx  # Voice intake UI (mic button, orb, transcript)
+│   │   └── ProfilePreview.tsx         # Review generated profile before saving
+│   ├── voice/
+│   │   └── PatientVoiceKiosk.tsx     # Animated orb, voice session, state display
+│   └── dashboard/
+│       ├── AlertBanner.tsx            # Realtime distress alert via Supabase
+│       ├── AcknowledgeButton.tsx
+│       ├── CopyLinkButton.tsx
+│       ├── PatientProfileEditForm.tsx
+│       └── RefreshProtocolsButton.tsx
 └── lib/
-    ├── supabase/            # DB client (browser + server)
-    ├── elevenlabs/          # Dynamic prompt builder, tool definitions
-    ├── firecrawl/           # Familiar world search, protocol extraction
-    └── claude/              # Intake prompts, profile generation
+    ├── supabase/          # Browser + server clients
+    ├── elevenlabs/
+    │   └── prompt-builder.ts    # Stage-aware personalized system prompt
+    ├── firecrawl/
+    │   ├── client.ts
+    │   ├── protocols.ts         # Map discovery + schema extraction
+    │   ├── familiar-world.ts    # Church / team / hometown search
+    │   └── weather.ts           # Firecrawl-powered weather lookup
+    └── claude/
+        ├── client.ts
+        └── onboarding.ts        # Intake system prompt + extraction prompt
 ```
 
 ---
@@ -154,27 +187,27 @@ src/
 ## Architecture
 
 ```
-Caregiver                    Patient
-    │                            │
-    ▼                            ▼
-Guided Onboarding          ElevenLabs Voice Agent
-(streaming chat)           (dynamic system prompt)
-    │                            │
-    ▼                            │
-patient_profiles ───────────────►  Personalized context
-    │                            │
-    │                  tool call: notify_caregiver
-    │                            │
-    ▼                            ▼
-Supabase ◄─────────── incidents table
-    │
-    ▼ Realtime
-Caregiver Dashboard
-(alert banner)
-    │
-    ▼
-Firecrawl
-(care protocols)
+Caregiver                          Patient
+    │                                  │
+    ▼                                  ▼
+Voice Intake (ElevenLabs)         Patient Kiosk (ElevenLabs)
+    │                              signed URL + system prompt
+    ▼                                  │
+Claude (extract profile)        prompt-builder.ts
+    │                              (talking points, triggers,
+    ▼                               church, team, weather)
+patient_profiles ─────────────────►   │
+    ▲                                  │
+    │ talking_points              tool call: notify_caregiver
+Firecrawl                              │
+(church, hometown, team,               ▼
+ care protocols)              incidents table (Supabase)
+                                       │
+                               Supabase Realtime
+                                       │
+                                       ▼
+                              Caregiver Dashboard
+                              (AlertBanner, incident feed)
 ```
 
 ---
@@ -182,12 +215,11 @@ Firecrawl
 ## Docs
 
 - [Setup Guide](docs/setup.md) — Step-by-step account and environment setup
-- [ElevenLabs Agent Config](docs/elevenlabs-setup.md) — Agent creation, tools, webhooks
+- [ElevenLabs Agent Config](docs/elevenlabs-setup.md) — Agent creation, tools, webhooks, dynamic variables
 - [Database Schema](docs/schema.md) — All tables, columns, RLS policies
-- [Architecture](docs/architecture.md) — System design and data flow
 
 ---
 
 ## Built with
 
-ElevenLabs Conversational AI and Firecrawl.
+ElevenLabs Conversational AI · Firecrawl · Claude API · Supabase

@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 
 const loginSchema = z.object({
@@ -17,8 +15,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const {
     register,
@@ -30,22 +28,24 @@ export default function LoginPage() {
 
   async function onSubmit(values: LoginFormValues) {
     setIsLoading(true);
+    setFormError(null);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email: values.email,
       password: values.password,
     });
     if (error) {
-      toast.error(
-        error.message === "Invalid login credentials"
-          ? "Incorrect email or password."
-          : error.message
-      );
+      const msg =
+        error.message.toLowerCase().includes("invalid login credentials")
+          ? "No account found with that email and password."
+          : error.message.toLowerCase().includes("email not confirmed")
+          ? "Please confirm your email first. Check your inbox for the confirmation link."
+          : error.message;
+      setFormError(msg);
       setIsLoading(false);
       return;
     }
-    router.push("/dashboard");
-    router.refresh();
+    window.location.href = "/dashboard";
   }
 
   return (
@@ -56,6 +56,12 @@ export default function LoginPage() {
         </h1>
         <p className="text-xs text-yellow-400/50">Sign in to Sundown Companion</p>
       </div>
+
+      {formError && (
+        <div className="rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300 text-center">
+          {formError}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Field label="Email address" error={errors.email?.message}>
@@ -109,7 +115,7 @@ function Field({
       <label className="text-xs font-medium text-yellow-400/60 uppercase tracking-wider">
         {label}
       </label>
-      <div className="[&>input]:w-full [&>input]:rounded-xl [&>input]:border [&>input]:border-yellow-400/15 [[&>input]:bg-yellow-400/5>input]:bg-yellow-400/5 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:text-white [&>input]:placeholder-yellow-400/40 [&>input]:outline-none [&>input]:transition [&>input]:focus:border-yellow-400/30 [[&>input]:focus:bg-white/8>input]:focus:bg-yellow-400/8">
+      <div className="[&>input]:w-full [&>input]:rounded-xl [&>input]:border [&>input]:border-yellow-400/15 [&>input]:bg-yellow-400/5 [&>input]:px-3 [&>input]:py-2.5 [&>input]:text-sm [&>input]:text-white [&>input]:placeholder-white/30 [&>input]:outline-none [&>input]:transition [&>input]:focus:border-yellow-400/30 [&>input]:focus:bg-yellow-400/8">
         {children}
       </div>
       {error && <p className="text-xs text-red-400/80">{error}</p>}

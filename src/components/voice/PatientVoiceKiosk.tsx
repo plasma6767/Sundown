@@ -33,7 +33,7 @@ export function PatientVoiceKiosk({
   const conversation = useConversation({
     onMessage: useCallback(
       ({ role, message }: { role: string; message: string }) => {
-        if (role === "agent") setLastMessage(message);
+        if (role === "agent") setLastMessage(message.replace(/\[[^\]]+\]/g, "").trim());
       },
       []
     ),
@@ -63,13 +63,31 @@ export function PatientVoiceKiosk({
         throw new Error(msg ?? "Could not start session");
       }
       const { signedUrl, systemPrompt } = await res.json();
+
       await conversation.startSession({
         signedUrl,
         overrides: {
           agent: {
             prompt: { prompt: systemPrompt },
-            firstMessage: `Hello, ${patientName}. It's so nice to talk with you today. How are you feeling?`,
+            firstMessage: `${timeCtx.greeting}, ${patientName}. It's so wonderful to talk with you. How are you feeling today?`,
           },
+          // turn_timeout: 25s — waits 25 seconds of silence before Sunny replies,
+          // giving dementia patients time to gather their thoughts mid-sentence.
+          // silence_end_call_timeout: 90s — won't hang up on long pauses.
+          conversation: {
+            config: {
+              turn: {
+                turn_timeout: 25,
+                silence_end_call_timeout: 90,
+              },
+            },
+          },
+        },
+        // metadata is echoed back in the post-call webhook — reliable patientId recovery
+        clientTools: {},
+        dynamicVariables: {
+          patient_name: patientName,
+          patient_id: patientId,
         },
       });
     } catch (err) {
