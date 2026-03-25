@@ -25,6 +25,19 @@ export default async function DashboardPage() {
     .eq("caregiver_id", user.id)
     .order("created_at", { ascending: false });
 
+  // If caregiver row doesn't exist, create it now (happens when email confirmation
+  // is disabled and the auth callback never fired)
+  if (!caregiver) {
+    await supabase.from("caregivers").upsert(
+      {
+        id: user.id,
+        full_name: user.user_metadata?.full_name ?? "Caregiver",
+        email: user.email!,
+      },
+      { onConflict: "id", ignoreDuplicates: true }
+    );
+  }
+
   if (!patients || patients.length === 0) redirect("/onboarding");
 
   const patientIds = patients.map((p) => p.id);

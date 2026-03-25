@@ -93,8 +93,19 @@ export function buildPatientSystemPrompt(
     );
   }
 
+  // Eleven v3 audio expression tags control vocal tone throughout the session.
+  // [slow] [warm] = default pacing. Shift to [calm] [reassuring] on distress.
+  const stage = patient.diagnosis_stage ?? "moderate";
+  const pacingNote =
+    stage === "severe"
+      ? "[slow] [gentle] Use very short sentences — three to five words. Repeat often. Pause between thoughts."
+      : stage === "mild"
+      ? "[warm] Speak naturally but warmly. Match their pace."
+      : "[slow] [warm] Use short sentences. Pause after each idea. Never rush.";
+
+  lines.push(`\n${pacingNote}`);
   lines.push(
-    `\n[slow] [warm] Speak gently. Never rush. If they seem confused, reassure them softly and simplify.`
+    `\nIf they become distressed, shift tone: [calm] [reassuring] — lower your pace, repeat their name, say "You're safe. I'm right here with you."`
   );
 
   // Tool context — agent uses this when calling notify_caregiver

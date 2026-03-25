@@ -212,24 +212,3 @@ export function SunnyFace({ size = 64 }: { size?: number }) {
     </svg>
   );
 }
-
-// ── Sunset nav icon (kept for auth layout) ────────────────────────────────────
-
-export function SunsetIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      className={className}
-    >
-      <path d="M2 14 Q2 4 12 4 Q22 4 22 14" />
-      <line x1="0" y1="14" x2="24" y2="14" />
-      <line x1="12" y1="1" x2="12" y2="0" />
-      <line x1="18.5" y1="3.5" x2="19.5" y2="2.5" />
-      <line x1="5.5" y1="3.5" x2="4.5" y2="2.5" />
-    </svg>
-  );
-}

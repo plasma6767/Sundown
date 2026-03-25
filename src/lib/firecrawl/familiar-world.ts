@@ -7,6 +7,7 @@ interface FamiliarWorldParams {
   hometown?: string | null;
   state?: string | null;
   favoriteTeam?: string | null;
+  diagnosisStage?: string | null;
 }
 
 // Searches the web for patient-specific context and saves talking points.
@@ -17,32 +18,43 @@ export async function fetchFamiliarWorld({
   hometown,
   state,
   favoriteTeam,
+  diagnosisStage,
 }: FamiliarWorldParams): Promise<void> {
   const queries: { query: string; label: string }[] = [];
 
   if (churchName) {
+    // Specific church bulletin search — Sunny can mention upcoming services
     queries.push({
-      query: `"${churchName}" church service schedule this week`,
-      label: `${churchName}`,
+      query: `"${churchName}" church bulletin announcements this week`,
+      label: `${churchName} church`,
     });
   }
 
   if (hometown && state) {
     queries.push({
-      query: `${hometown} ${state} local community events this week`,
-      label: `${hometown} events`,
+      query: `${hometown} ${state} local news community events this week`,
+      label: `${hometown} news`,
     });
   } else if (hometown) {
     queries.push({
-      query: `${hometown} local community events this week`,
-      label: `${hometown} events`,
+      query: `${hometown} local news community events this week`,
+      label: `${hometown} news`,
     });
   }
 
   if (favoriteTeam) {
+    // Latest game recap — Sunny can celebrate or commiserate naturally
     queries.push({
-      query: `${favoriteTeam} latest game recap news`,
+      query: `${favoriteTeam} latest game result recap highlights`,
       label: `${favoriteTeam}`,
+    });
+  }
+
+  // Add a stage-appropriate care tip as a talking point for Sunny
+  if (diagnosisStage) {
+    queries.push({
+      query: `dementia ${diagnosisStage} stage daily activities comfort tips`,
+      label: "care tip",
     });
   }
 

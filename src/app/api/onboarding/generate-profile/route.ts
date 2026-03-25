@@ -166,6 +166,7 @@ export async function POST(request: Request) {
     hometown: profile.hometown,
     state: profile.state,
     favoriteTeam: profile.favorite_team,
+    diagnosisStage: profile.diagnosis_stage,
   }).catch((err) =>
     console.error("[familiar-world] Background search failed:", err)
   );

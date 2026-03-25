@@ -35,6 +35,7 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute =
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
+    pathname.startsWith("/confirm") ||
     pathname.startsWith("/auth");
 
   // Patient kiosk is public — token in URL is the auth mechanism
