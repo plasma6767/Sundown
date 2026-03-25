@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -29,6 +30,18 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
+  // Fetch recent open incidents across all this caregiver's patients
+  const patientIds = (patients ?? []).map((p) => p.id);
+  const { data: incidents } = patientIds.length
+    ? await supabase
+        .from("incidents")
+        .select("id, title, description, severity, status, created_at, patient_id")
+        .in("patient_id", patientIds)
+        .eq("status", "open")
+        .order("created_at", { ascending: false })
+        .limit(10)
+    : { data: [] };
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
   return (
@@ -38,7 +51,7 @@ export default async function DashboardPage() {
           <h1 className="text-3xl font-bold text-foreground">
             Welcome back, {caregiver?.full_name ?? "Caregiver"}
           </h1>
-          <p className="text-muted-foreground mt-1">Full dashboard coming in Step 6.</p>
+          <p className="text-muted-foreground mt-1">Caregiver dashboard</p>
         </div>
 
         <div className="space-y-4">
@@ -84,6 +97,52 @@ export default async function DashboardPage() {
             );
           })}
         </div>
+        {/* Incidents feed */}
+        {incidents && incidents.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-foreground">
+              Open incidents
+            </h2>
+            {incidents.map((inc) => {
+              const patient = patients.find((p) => p.id === inc.patient_id);
+              const name =
+                patient?.preferred_name ?? patient?.full_name ?? "Patient";
+              return (
+                <div
+                  key={inc.id}
+                  className="rounded-xl border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-900 p-4 flex items-start gap-3"
+                >
+                  <span className="text-lg mt-0.5" aria-hidden>
+                    🚨
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-foreground text-sm">
+                      {name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{inc.title}</p>
+                    {inc.description && (
+                      <p className="text-sm text-foreground mt-0.5">{inc.description}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatDistanceToNow(new Date(inc.created_at), {
+                        addSuffix: true,
+                      })}
+                    </p>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+                      inc.severity === "critical"
+                        ? "bg-red-600 text-white"
+                        : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+                    }`}
+                  >
+                    {inc.severity}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </main>
   );

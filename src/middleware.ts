@@ -38,7 +38,12 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/auth");
 
   // Patient kiosk is public — token in URL is the auth mechanism
-  const isPublicRoute = pathname === "/" || pathname.startsWith("/patient");
+  // Webhook routes are public — secured by their own secret/token checks
+  const isPublicRoute =
+    pathname === "/" ||
+    pathname.startsWith("/patient") ||
+    pathname.startsWith("/api/incidents") ||
+    pathname.startsWith("/api/voice/webhook");
 
   // Redirect unauthenticated users away from protected routes
   if (!user && !isAuthRoute && !isPublicRoute) {
