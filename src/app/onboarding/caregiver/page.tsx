@@ -64,7 +64,7 @@ export default function CaregiverOnboardingPage() {
 
   if (stage === "preview" && result) {
     return (
-      <div className="mx-auto w-full max-w-2xl px-4 py-8">
+      <div className="mx-auto w-full max-w-2xl px-4 py-10">
         <ProfilePreview
           profile={result.profile as unknown as Parameters<typeof ProfilePreview>[0]["profile"]}
           patientUrl={result.patientUrl}
@@ -73,7 +73,7 @@ export default function CaregiverOnboardingPage() {
         <div className="mt-8">
           <button
             onClick={() => router.push("/dashboard")}
-            className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+            className="w-full rounded-xl bg-white text-[#1A0800] px-4 py-3 text-sm font-semibold hover:bg-white/90 transition-all"
           >
             Go to Dashboard →
           </button>
@@ -84,12 +84,12 @@ export default function CaregiverOnboardingPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="border-b px-6 py-4">
-        <h1 className="text-lg font-semibold text-foreground">
+      <div className="border-b border-yellow-400/10 px-6 py-5">
+        <h1 className="text-lg font-semibold text-white">
           Tell us about your loved one
         </h1>
-        <p className="text-sm text-muted-foreground">
-          This helps the companion understand how to keep them safe and comfortable.
+        <p className="text-sm text-yellow-400/50 mt-0.5">
+          Sunny will ask you questions to build a personalized care profile.
         </p>
       </div>
       <div className="flex-1 overflow-hidden">

@@ -34,10 +34,13 @@ function Section({
 }) {
   return (
     <div className="space-y-2">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <h3 className="text-[10px] font-semibold uppercase tracking-[0.15em] text-yellow-400/50">
         {title}
       </h3>
-      <div className="rounded-lg border bg-card p-4 text-sm text-foreground">
+      <div
+        className="rounded-xl border border-yellow-400/15 p-4 text-sm text-white/80"
+        style={{ background: "rgba(255,255,255,0.03)" }}
+      >
         {children}
       </div>
     </div>
@@ -48,20 +51,20 @@ function Row({ label, value }: { label: string; value: string | null | undefined
   if (!value) return null;
   return (
     <div className="flex gap-2">
-      <span className="min-w-[140px] text-muted-foreground">{label}</span>
-      <span>{value}</span>
+      <span className="min-w-[140px] text-yellow-400/50 shrink-0">{label}</span>
+      <span className="text-white/80">{value}</span>
     </div>
   );
 }
 
 function TagList({ items }: { items: string[] }) {
-  if (!items?.length) return <span className="text-muted-foreground">None noted</span>;
+  if (!items?.length) return <span className="text-yellow-400/35">None noted</span>;
   return (
     <ul className="space-y-1">
       {items.map((item, i) => (
         <li key={i} className="flex items-start gap-2">
-          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-          {item}
+          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-yellow-400/50" />
+          <span>{item}</span>
         </li>
       ))}
     </ul>
@@ -74,18 +77,18 @@ export function ProfilePreview({ profile, patientUrl, onStartOver }: ProfilePrev
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
-        <h2 className="text-2xl font-bold text-foreground">
+        <h2 className="text-2xl font-light text-white">
           {profile.preferred_name ?? profile.full_name ?? "Patient"}&apos;s Care Profile
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-sm text-yellow-400/50">
           Review the profile below. The companion will use this to support your loved one safely.
         </p>
       </div>
 
       <Section title="Identity">
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <Row label="Full name" value={profile.full_name} />
           <Row label="Preferred name" value={profile.preferred_name} />
           <Row label="Diagnosis stage" value={profile.diagnosis_stage} />
@@ -97,7 +100,7 @@ export function ProfilePreview({ profile, patientUrl, onStartOver }: ProfilePrev
       </Section>
 
       <Section title="Sundowning Window">
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <Row
             label="Typical window"
             value={
@@ -109,7 +112,7 @@ export function ProfilePreview({ profile, patientUrl, onStartOver }: ProfilePrev
         </div>
         {profile.sundown_behaviors?.length > 0 && (
           <div className="mt-3">
-            <p className="mb-1 text-muted-foreground">Behaviors during episodes:</p>
+            <p className="mb-1.5 text-yellow-400/50 text-xs">Behaviors during episodes:</p>
             <TagList items={profile.sundown_behaviors} />
           </div>
         )}
@@ -118,11 +121,11 @@ export function ProfilePreview({ profile, patientUrl, onStartOver }: ProfilePrev
       <Section title="Triggers & Calming">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <p className="mb-2 font-medium">Known triggers</p>
+            <p className="mb-2 text-xs font-medium text-yellow-400/70 uppercase tracking-wider">Known triggers</p>
             <TagList items={profile.distress_triggers} />
           </div>
           <div>
-            <p className="mb-2 font-medium">What helps</p>
+            <p className="mb-2 text-xs font-medium text-yellow-400/70 uppercase tracking-wider">What helps</p>
             <TagList items={profile.calming_strategies} />
           </div>
         </div>
@@ -132,26 +135,26 @@ export function ProfilePreview({ profile, patientUrl, onStartOver }: ProfilePrev
         <div className="space-y-3">
           {profile.dangerous_behaviors?.length > 0 && (
             <div>
-              <p className="mb-1 font-medium text-destructive">Dangerous behaviors</p>
+              <p className="mb-1.5 text-xs font-medium text-red-400/70 uppercase tracking-wider">Dangerous behaviors</p>
               <TagList items={profile.dangerous_behaviors} />
             </div>
           )}
           {profile.never_say_items?.length > 0 && (
             <div>
-              <p className="mb-1 font-medium">Never mention</p>
+              <p className="mb-1.5 text-xs font-medium text-yellow-400/70 uppercase tracking-wider">Never mention</p>
               <TagList items={profile.never_say_items} />
             </div>
           )}
           {profile.deceased_relatives_handling && (
             <div>
-              <p className="mb-1 font-medium">Deceased relatives</p>
-              <p>{profile.deceased_relatives_handling}</p>
+              <p className="mb-1 text-xs font-medium text-yellow-400/70 uppercase tracking-wider">Deceased relatives</p>
+              <p className="text-white/60">{profile.deceased_relatives_handling}</p>
             </div>
           )}
           {profile.escalation_threshold && (
             <div>
-              <p className="mb-1 font-medium">Alert caregiver when</p>
-              <p>{profile.escalation_threshold}</p>
+              <p className="mb-1 text-xs font-medium text-yellow-400/70 uppercase tracking-wider">Alert caregiver when</p>
+              <p className="text-white/60">{profile.escalation_threshold}</p>
             </div>
           )}
         </div>
@@ -159,27 +162,30 @@ export function ProfilePreview({ profile, patientUrl, onStartOver }: ProfilePrev
 
       {profile.medications_notes && (
         <Section title="Medications">
-          <p>{profile.medications_notes}</p>
+          <p className="text-white/60">{profile.medications_notes}</p>
         </Section>
       )}
 
       {/* Patient link */}
-      <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-4 space-y-3">
-        <p className="text-sm font-medium text-foreground">
+      <div
+        className="rounded-xl border border-yellow-400/20 p-4 space-y-3"
+        style={{ background: "rgba(251,191,36,0.04)" }}
+      >
+        <p className="text-sm font-medium text-white">
           Patient&apos;s companion link
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-yellow-400/50">
           Share this link with your loved one. It opens directly to their companion — no login needed.
         </p>
         <div className="flex items-center gap-2">
           <input
             readOnly
             value={patientUrl}
-            className="flex-1 rounded-md border bg-background px-3 py-1.5 text-xs text-muted-foreground"
+            className="flex-1 rounded-lg border border-yellow-400/15 bg-yellow-400/5 px-3 py-1.5 text-xs text-yellow-400/55 outline-none"
           />
           <button
             onClick={copyLink}
-            className="shrink-0 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
+            className="shrink-0 rounded-lg bg-white text-[#1A0800] px-3 py-1.5 text-xs font-semibold hover:bg-white/90 transition-all"
           >
             Copy
           </button>
@@ -188,7 +194,7 @@ export function ProfilePreview({ profile, patientUrl, onStartOver }: ProfilePrev
 
       <button
         onClick={onStartOver}
-        className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+        className="text-xs text-yellow-400/35 underline underline-offset-2 hover:text-yellow-400/70 transition-colors"
       >
         Something looks wrong — start over
       </button>
