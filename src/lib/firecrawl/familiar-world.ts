@@ -58,10 +58,10 @@ export async function fetchFamiliarWorld({
   );
 
   results.forEach((result, index) => {
-    if (result.status === "fulfilled" && (result.value.web ?? []).length > 0) {
+    if (result.status === "fulfilled" && (result.value.data ?? []).length > 0) {
       const label = queries[index].label;
-      const firstResult = result.value.web![0];
-      const snippet = ("description" in firstResult ? firstResult.description : undefined)
+      const firstResult = result.value.data[0];
+      const snippet = (firstResult.description ?? firstResult.markdown)
         ?.slice(0, 300)
         .replace(/\n+/g, " ")
         .trim();

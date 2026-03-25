@@ -14,12 +14,11 @@ export async function fetchCurrentWeather(
       limit: 1,
     });
 
-    const first = result.web?.[0];
+    const first = result.data?.[0];
     if (!first) return null;
 
     // Use description if available — usually contains temperature + conditions
-    const description =
-      "description" in first ? (first.description as string) : null;
+    const description = (first.description ?? first.markdown) as string | null;
 
     if (!description) return null;
 
