@@ -22,7 +22,7 @@ export function AcknowledgeButton({ incidentId }: { incidentId: string }) {
     <button
       onClick={handleAcknowledge}
       disabled={loading}
-      className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 disabled:opacity-50"
+      className="text-xs text-yellow-400/55 hover:text-white/70 underline underline-offset-2 disabled:opacity-50 transition-colors"
     >
       {loading ? "Acknowledging…" : "Acknowledge"}
     </button>

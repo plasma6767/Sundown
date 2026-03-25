@@ -19,7 +19,7 @@ const FIRST_MESSAGE =
   "I'll ask you a few questions so I can understand how best to support them. " +
   "Can you start by telling me their name and what stage of dementia they've been diagnosed with?";
 
-const MIN_MESSAGES = 8; // at least 4 exchanges before allowing generate
+const MIN_MESSAGES = 8;
 
 export function CaregiverVoiceIntake({
   onComplete,
@@ -75,7 +75,6 @@ export function CaregiverVoiceIntake({
     setMessageCount(0);
     isEndingRef.current = false;
     try {
-      // Get server-signed URL (keeps API key server-side, works with private agents)
       const tokenRes = await fetch("/api/onboarding/voice-token");
       if (!tokenRes.ok) {
         const { error } = await tokenRes.json();
@@ -110,7 +109,6 @@ export function CaregiverVoiceIntake({
     onComplete(transcriptRef.current);
   }
 
-  // If parent finishes generating (error case), reset the ending spinner
   useEffect(() => {
     if (!isGenerating && isEnding) {
       setIsEnding(false);
@@ -128,22 +126,23 @@ export function CaregiverVoiceIntake({
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-16">
         {error && (
-          <p className="max-w-sm rounded-lg bg-destructive/10 px-4 py-2 text-center text-sm text-destructive">
+          <p className="max-w-sm rounded-xl border border-red-500/20 px-4 py-2 text-center text-sm text-red-400/80"
+            style={{ background: "rgba(239,68,68,0.06)" }}>
             {error}
           </p>
         )}
-        <p className="max-w-sm text-center text-sm text-muted-foreground">
+        <p className="max-w-sm text-center text-sm text-yellow-400/50 leading-relaxed">
           Sunny will ask you about your loved one&apos;s condition, routines, and
           needs. Speak naturally — there are no wrong answers.
         </p>
         <button
           onClick={handleStart}
-          className="flex h-24 w-24 items-center justify-center rounded-full bg-primary shadow-lg transition hover:bg-primary/90 active:scale-95"
+          className="relative flex h-24 w-24 items-center justify-center rounded-full bg-white/10 border border-yellow-400/25 shadow-lg transition hover:bg-white/15 active:scale-95"
           aria-label="Start conversation"
         >
-          <MicIcon className="h-9 w-9 text-primary-foreground" />
+          <MicIcon className="h-9 w-9 text-white" />
         </button>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-yellow-400/35">
           {error ? "Tap to try again" : "Tap to start"}
         </p>
       </div>
@@ -154,8 +153,8 @@ export function CaregiverVoiceIntake({
   if (!isConnected && !isEnding && conversation.status !== "disconnected") {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <p className="text-sm text-muted-foreground">Connecting to Sunny…</p>
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-yellow-400/60 border-t-transparent" />
+        <p className="text-sm text-yellow-400/50">Connecting to Sunny…</p>
       </div>
     );
   }
@@ -164,8 +163,8 @@ export function CaregiverVoiceIntake({
   if (isGenerating || isEnding) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <p className="text-sm text-muted-foreground">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-yellow-400/60 border-t-transparent" />
+        <p className="text-sm text-yellow-400/50">
           {isGenerating ? "Building care profile…" : "Ending conversation…"}
         </p>
       </div>
@@ -175,25 +174,28 @@ export function CaregiverVoiceIntake({
   // ── Active conversation ──────────────────────────────────────────────────
   return (
     <div className="flex flex-1 flex-col items-center justify-between px-6 py-10">
-      {/* Status */}
-      <div className="flex flex-col items-center gap-2">
+      {/* Orb */}
+      <div className="flex flex-col items-center gap-3">
         <div
-          className={`flex h-20 w-20 items-center justify-center rounded-full transition-all duration-300 ${
+          className={`relative flex h-24 w-24 items-center justify-center rounded-full transition-all duration-500 ${
             agentSpeaking
-              ? "animate-pulse bg-primary/20 ring-4 ring-primary/30"
-              : "bg-muted"
+              ? "bg-yellow-400/20 ring-4 ring-yellow-400/25 shadow-lg shadow-yellow-400/10"
+              : "bg-yellow-400/6 border border-yellow-400/20"
           }`}
         >
+          {agentSpeaking && (
+            <div className="absolute inset-0 rounded-full animate-ping bg-yellow-400/10" />
+          )}
           <SoundwaveIcon
-            className={`h-8 w-8 transition-colors ${
-              agentSpeaking ? "text-primary" : "text-muted-foreground"
+            className={`h-8 w-8 transition-colors duration-300 ${
+              agentSpeaking ? "text-white/60" : "text-yellow-400/35"
             }`}
           />
         </div>
-        <p className="text-sm font-medium text-foreground">
+        <p className="text-sm font-medium text-white/70">
           {agentSpeaking ? "Sunny is speaking…" : "Your turn — speak freely"}
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-yellow-400/35">
           {messageCount} message{messageCount !== 1 ? "s" : ""} so far
         </p>
       </div>
@@ -201,15 +203,14 @@ export function CaregiverVoiceIntake({
       {/* End button */}
       <div className="flex w-full flex-col items-center gap-3">
         {!canGenerate && (
-          <p className="text-xs text-muted-foreground">
-            Keep talking — the button will appear when Sunny has enough
-            information.
+          <p className="text-xs text-yellow-400/35 text-center max-w-xs">
+            Keep talking — the button will appear when Sunny has enough information.
           </p>
         )}
         <button
           onClick={handleEndAndGenerate}
           disabled={!canGenerate}
-          className="w-full max-w-xs rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full max-w-xs rounded-xl bg-white text-[#1A0800] px-4 py-3 text-sm font-semibold transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-30"
         >
           End &amp; Generate Profile
         </button>
@@ -218,7 +219,7 @@ export function CaregiverVoiceIntake({
   );
 }
 
-// ── Inline icons (no extra package) ─────────────────────────────────────────
+// ── Inline icons ─────────────────────────────────────────────────────────────
 
 function MicIcon({ className }: { className?: string }) {
   return (

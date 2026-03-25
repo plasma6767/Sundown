@@ -29,12 +29,12 @@ export function RefreshProtocolsButton() {
       <button
         onClick={handleRefresh}
         disabled={loading}
-        className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className="rounded-xl bg-white text-[#1A0800] px-4 py-2 text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-50"
       >
         {loading ? "Fetching…" : "Refresh Protocols"}
       </button>
       {status && (
-        <p className="text-xs text-muted-foreground">{status}</p>
+        <p className="text-xs text-yellow-400/55">{status}</p>
       )}
     </div>
   );

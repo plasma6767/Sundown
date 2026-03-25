@@ -37,21 +37,11 @@ export default async function PatientPage({
   const displayName = patient.preferred_name ?? patient.full_name;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
-      <div className="flex w-full max-w-sm flex-col items-center gap-10 text-center">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-bold text-foreground">
-            Hello, {displayName}
-          </h1>
-          <p className="text-muted-foreground">Sunny is here with you.</p>
-        </div>
-        <PatientVoiceKiosk
-          patientId={patient.id}
-          token={token}
-          patientName={displayName}
-        />
-      </div>
-    </main>
+    <PatientVoiceKiosk
+      patientId={patient.id}
+      token={token}
+      patientName={displayName}
+    />
   );
 }
 

@@ -4,9 +4,9 @@ export default function ConfirmPage() {
   return (
     <div className="space-y-6 text-center">
       <div className="flex justify-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-yellow-400/10 border border-yellow-400/20">
           <svg
-            className="h-8 w-8 text-primary"
+            className="h-8 w-8 text-yellow-400/70"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
@@ -22,18 +22,18 @@ export default function ConfirmPage() {
       </div>
 
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="text-xl font-semibold tracking-tight text-white">
           Check your email
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-yellow-400/50 leading-relaxed">
           We sent a confirmation link to your email address. Click the link to
           activate your account and get started.
         </p>
       </div>
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-yellow-400/45">
         Already confirmed?{" "}
-        <Link href="/login" className="font-medium text-primary hover:underline">
+        <Link href="/login" className="text-white/60 hover:text-white transition-colors">
           Sign in
         </Link>
       </p>
