@@ -85,7 +85,6 @@ export async function POST(request: Request) {
   try {
     profile = JSON.parse(cleanedText) as ExtractedProfile;
   } catch {
-    console.error("[generate-profile] Claude raw response:", rawText);
     return NextResponse.json(
       { error: "Failed to parse profile. Please try again." },
       { status: 500 }
@@ -167,9 +166,7 @@ export async function POST(request: Request) {
     state: profile.state,
     favoriteTeam: profile.favorite_team,
     diagnosisStage: profile.diagnosis_stage,
-  }).catch((err) =>
-    console.error("[familiar-world] Background search failed:", err)
-  );
+  }).catch(() => {});
 
   // Build the patient kiosk URL with token
   const patientUrl = `${process.env.NEXT_PUBLIC_APP_URL}/patient/${patient.id}?token=${patient.access_token}`;

@@ -34,7 +34,7 @@ export default async function CareIntelligencePage() {
               the Alzheimer&apos;s Association and National Institute on Aging.
             </p>
           </div>
-          <RefreshProtocolsButton />
+          <RefreshProtocolsButton hasData={!!chunks && chunks.length > 0} />
         </div>
 
         {!chunks || chunks.length === 0 ? (
@@ -44,7 +44,7 @@ export default async function CareIntelligencePage() {
           >
             <p className="text-white/50">No protocols loaded yet.</p>
             <p className="text-sm text-white/35">
-              Click &ldquo;Refresh Protocols&rdquo; to fetch the latest guidance from dementia
+              Click &ldquo;Load Protocols&rdquo; to fetch the latest guidance from dementia
               care authorities.
             </p>
           </div>

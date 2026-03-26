@@ -71,17 +71,8 @@ export function PatientVoiceKiosk({
             prompt: { prompt: systemPrompt },
             firstMessage: `${timeCtx.greeting}, ${patientName}. It's so wonderful to talk with you. How are you feeling today?`,
           },
-          // turn_timeout: 25s — waits 25 seconds of silence before Sunny replies,
-          // giving dementia patients time to gather their thoughts mid-sentence.
-          // silence_end_call_timeout: 90s — won't hang up on long pauses.
-          conversation: {
-            config: {
-              turn: {
-                turn_timeout: 25,
-                silence_end_call_timeout: 90,
-              },
-            },
-          },
+          // turn_timeout (25s) and silence_end_call_timeout (90s) are configured
+          // in the ElevenLabs agent dashboard — not overridable via the client SDK.
         },
         // metadata is echoed back in the post-call webhook — reliable patientId recovery
         clientTools: {},
