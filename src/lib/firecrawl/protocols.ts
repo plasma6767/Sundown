@@ -40,7 +40,7 @@ Return a JSON object with:
 // then run schema extraction only on the most relevant ones.
 async function discoverRelevantUrls(domain: string): Promise<string[]> {
   try {
-    const mapResult = await firecrawl.map(domain, { limit: 50 });
+    const mapResult = await firecrawl.mapUrl(domain, { limit: 50 });
     if (!mapResult.success || !Array.isArray(mapResult.links)) return [domain];
 
     const relevant = mapResult.links.filter((url: string) =>
@@ -106,8 +106,8 @@ export async function crawlCareProtocols(): Promise<CareProtocol[]> {
             confidence_score: d.confidence_score,
           });
         }
-      } catch (err) {
-        console.error(`[protocols] Failed to extract ${url}:`, err);
+      } catch {
+        // Skip URLs that fail extraction
       }
     }
   }

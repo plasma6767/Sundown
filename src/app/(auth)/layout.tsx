@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SunnyFace } from "@/app/page";
+import { SunnyFace } from "@/components/ui/SunnyFace";
 
 export default function AuthLayout({
   children,

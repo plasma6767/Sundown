@@ -31,10 +31,7 @@ export async function GET(request: Request) {
     }
   );
 
-  if (upsertError) {
-    console.error("[auth/callback] Failed to upsert caregiver row:", upsertError.message);
-    // Non-fatal — user is authenticated, let them through
-  }
+  // upsertError is non-fatal — user is authenticated, let them through
 
   return NextResponse.redirect(`${origin}${next}`);
 }

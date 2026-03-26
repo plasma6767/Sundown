@@ -35,7 +35,6 @@ export async function PATCH(
     .eq("id", id);
 
   if (patientError) {
-    console.error("[patients PATCH] patients update error:", patientError);
     return NextResponse.json({ error: patientError.message }, { status: 500 });
   }
 
@@ -66,7 +65,6 @@ export async function PATCH(
     }, { onConflict: "patient_id" });
 
   if (profileError) {
-    console.error("[patients PATCH] patient_profiles upsert error:", profileError);
     return NextResponse.json({ error: profileError.message }, { status: 500 });
   }
 

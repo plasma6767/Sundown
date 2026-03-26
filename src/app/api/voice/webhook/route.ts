@@ -32,7 +32,6 @@ export async function POST(request: Request) {
 
   if (!patientId) {
     // No patientId — likely a test ping from ElevenLabs; acknowledge and move on
-    console.warn("[voice/webhook] No patientId in payload");
     return NextResponse.json({ received: true });
   }
 
@@ -60,13 +59,9 @@ export async function POST(request: Request) {
     .select("id")
     .single();
 
-  if (sessionError) {
-    console.error("[voice/webhook] session upsert error:", sessionError);
-  }
-
   // Auto-create incident if risk is elevated
-  if (escalated) {
-    const { error: incidentError } = await supabase.from("incidents").insert({
+  if (!sessionError && escalated) {
+    await supabase.from("incidents").insert({
       patient_id: patientId,
       session_id: session?.id ?? null,
       severity: riskScore > 80 ? "critical" : "high",
@@ -74,10 +69,6 @@ export async function POST(request: Request) {
       description: `Risk score: ${riskScore}/100. Session ended at ${new Date().toLocaleTimeString()}.`,
       status: "open",
     });
-
-    if (incidentError) {
-      console.error("[voice/webhook] incident insert error:", incidentError);
-    }
   }
 
   return NextResponse.json({ received: true });

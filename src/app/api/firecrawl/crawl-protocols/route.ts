@@ -41,7 +41,6 @@ export async function POST() {
   );
 
   if (error) {
-    console.error("[crawl-protocols] insert error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

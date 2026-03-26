@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function RefreshProtocolsButton() {
+export function RefreshProtocolsButton({ hasData }: { hasData: boolean }) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const router = useRouter();
@@ -31,7 +31,7 @@ export function RefreshProtocolsButton() {
         disabled={loading}
         className="rounded-xl bg-white text-[#1A0800] px-4 py-2 text-sm font-semibold hover:bg-white/90 transition-all disabled:opacity-50"
       >
-        {loading ? "Fetching…" : "Refresh Protocols"}
+        {loading ? "Fetching…" : hasData ? "Refresh Protocols" : "Load Protocols"}
       </button>
       {status && (
         <p className="text-xs text-yellow-400/55">{status}</p>
